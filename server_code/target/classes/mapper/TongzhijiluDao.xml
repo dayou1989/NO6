@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cl.dao.TongzhijiluDao">
+
+    <resultMap type="com.cl.entity.TongzhijiluEntity" id="tongzhijiluMap">
+        <result property="yuyuebianhao" column="yuyuebianhao"/>
+        <result property="zhanghao" column="zhanghao"/>
+        <result property="shouji" column="shouji"/>
+        <result property="tongzhileixing" column="tongzhileixing"/>
+        <result property="tongzhineirong" column="tongzhineirong"/>
+        <result property="fasongqudao" column="fasongqudao"/>
+        <result property="fasongzhuangtai" column="fasongzhuangtai"/>
+        <result property="shibaiyuanyin" column="shibaiyuanyin"/>
+        <result property="chongshicishu" column="chongshicishu"/>
+        <result property="zuidachongshicishu" column="zuidachongshicishu"/>
+        <result property="jihuafasongshijian" column="jihuafasongshijian"/>
+        <result property="shijifasongshijian" column="shijifasongshijian"/>
+        <result property="addtime" column="addtime"/>
+    </resultMap>
+
+    <select id="selectListView"
+            resultType="com.cl.entity.view.TongzhijiluView">
+        SELECT
+            t.*,
+            y.xingming as xingming,
+            CASE t.tongzhileixing
+                WHEN 1 THEN '预约成功通知'
+                WHEN 2 THEN '就诊前24小时提醒'
+                WHEN 3 THEN '就诊前1小时提醒'
+                WHEN 4 THEN '就诊当天提醒'
+                ELSE '未知类型'
+            END as tongzhileixingName,
+            CASE t.fasongzhuangtai
+                WHEN 0 THEN '待发送'
+                WHEN 1 THEN '发送成功'
+                WHEN 2 THEN '发送失败'
+                ELSE '未知状态'
+            END as fasongzhuangtaiName
+        FROM tongzhijilu t
+        LEFT JOIN yonghu y ON t.zhanghao = y.zhanghao
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectListView"
+            resultType="com.cl.entity.view.TongzhijiluView"
+            parameterType="com.baomidou.mybatisplus.plugins.pagination.Pagination">
+        SELECT
+            t.*,
+            y.xingming as xingming,
+            CASE t.tongzhileixing
+                WHEN 1 THEN '预约成功通知'
+                WHEN 2 THEN '就诊前24小时提醒'
+                WHEN 3 THEN '就诊前1小时提醒'
+                WHEN 4 THEN '就诊当天提醒'
+                ELSE '未知类型'
+            END as tongzhileixingName,
+            CASE t.fasongzhuangtai
+                WHEN 0 THEN '待发送'
+                WHEN 1 THEN '发送成功'
+                WHEN 2 THEN '发送失败'
+                ELSE '未知状态'
+            END as fasongzhuangtaiName
+        FROM tongzhijilu t
+        LEFT JOIN yonghu y ON t.zhanghao = y.zhanghao
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectView"
+            resultType="com.cl.entity.view.TongzhijiluView">
+        SELECT
+            t.*,
+            y.xingming as xingming,
+            CASE t.tongzhileixing
+                WHEN 1 THEN '预约成功通知'
+                WHEN 2 THEN '就诊前24小时提醒'
+                WHEN 3 THEN '就诊前1小时提醒'
+                WHEN 4 THEN '就诊当天提醒'
+                ELSE '未知类型'
+            END as tongzhileixingName,
+            CASE t.fasongzhuangtai
+                WHEN 0 THEN '待发送'
+                WHEN 1 THEN '发送成功'
+                WHEN 2 THEN '发送失败'
+                ELSE '未知状态'
+            END as fasongzhuangtaiName
+        FROM tongzhijilu t
+        LEFT JOIN yonghu y ON t.zhanghao = y.zhanghao
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectRetryList"
+            resultType="com.cl.entity.TongzhijiluEntity">
+        SELECT * FROM tongzhijilu
+        WHERE fasongzhuangtai = 2
+          AND chongshicishu &lt; #{maxRetryCount}
+        ORDER BY addtime ASC
+    </select>
+
+</mapper>

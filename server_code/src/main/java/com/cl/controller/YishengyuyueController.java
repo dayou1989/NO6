@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -25,9 +26,12 @@ import com.cl.annotation.IgnoreAuth;
 import com.cl.annotation.SysLog;
 
 import com.cl.entity.YishengyuyueEntity;
+import com.cl.entity.YonghuEntity;
 import com.cl.entity.view.YishengyuyueView;
 
 import com.cl.service.YishengyuyueService;
+import com.cl.service.YonghuService;
+import com.cl.service.TongzhiService;
 import com.cl.service.TokenService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
@@ -47,6 +51,12 @@ import com.cl.utils.CommonUtil;
 public class YishengyuyueController {
     @Autowired
     private YishengyuyueService yishengyuyueService;
+
+    @Autowired
+    private YonghuService yonghuService;
+
+    @Autowired
+    private TongzhiService tongzhiService;
 
 
 
@@ -149,9 +159,13 @@ public class YishengyuyueController {
     public R save(@RequestBody YishengyuyueEntity yishengyuyue, HttpServletRequest request){
     	//ValidatorUtils.validateEntity(yishengyuyue);
         yishengyuyueService.insert(yishengyuyue);
+
+        // 预约成功后立即发送所有后续提醒
+        sendNotificationsAfterBooking(yishengyuyue);
+
         return R.ok();
     }
-    
+
     /**
      * 前端保存
      */
@@ -160,7 +174,45 @@ public class YishengyuyueController {
     public R add(@RequestBody YishengyuyueEntity yishengyuyue, HttpServletRequest request){
     	//ValidatorUtils.validateEntity(yishengyuyue);
         yishengyuyueService.insert(yishengyuyue);
+
+        // 预约成功后立即发送所有后续提醒
+        sendNotificationsAfterBooking(yishengyuyue);
+
         return R.ok();
+    }
+
+    /**
+     * 预约成功后发送通知
+     */
+    private void sendNotificationsAfterBooking(YishengyuyueEntity yishengyuyue) {
+        try {
+            // 查询用户信息
+            YonghuEntity yonghu = yonghuService.selectOne(
+                    new EntityWrapper<YonghuEntity>().eq("zhanghao", yishengyuyue.getZhanghao())
+            );
+
+            if (yonghu != null) {
+                // 调用通知服务发送所有通知
+                List<TongzhiService.SendResult> results = tongzhiService.sendAllNotificationsOnBooking(yishengyuyue, yonghu);
+
+                // 记录发送结果日志
+                int successCount = 0;
+                int failCount = 0;
+                for (TongzhiService.SendResult result : results) {
+                    if (result.isSuccess()) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                    }
+                }
+                System.out.println("预约通知发送完成 - 成功：" + successCount + "，失败：" + failCount);
+            } else {
+                System.err.println("未找到用户信息，无法发送通知 - 账号：" + yishengyuyue.getZhanghao());
+            }
+        } catch (Exception e) {
+            System.err.println("发送预约通知时发生错误：" + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 
