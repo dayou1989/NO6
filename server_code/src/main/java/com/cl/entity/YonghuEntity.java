@@ -87,6 +87,16 @@ public class YonghuEntity<T> implements Serializable {
 					
 	private String shouji;
 	
+	/**
+	 * 短信接收开关
+	 */
+	private Integer smsEnabled;
+	
+	/**
+	 * 站内信接收开关
+	 */
+	private Integer messageEnabled;
+	
 
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat
@@ -176,6 +186,30 @@ public class YonghuEntity<T> implements Serializable {
 	 */
 	public String getShouji() {
 		return shouji;
+	}
+	/**
+	 * 设置：短信接收开关
+	 */
+	public void setSmsEnabled(Integer smsEnabled) {
+		this.smsEnabled = smsEnabled;
+	}
+	/**
+	 * 获取：短信接收开关
+	 */
+	public Integer getSmsEnabled() {
+		return smsEnabled;
+	}
+	/**
+	 * 设置：站内信接收开关
+	 */
+	public void setMessageEnabled(Integer messageEnabled) {
+		this.messageEnabled = messageEnabled;
+	}
+	/**
+	 * 获取：站内信接收开关
+	 */
+	public Integer getMessageEnabled() {
+		return messageEnabled;
 	}
 
 }

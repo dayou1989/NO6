@@ -7,6 +7,7 @@
 	import yishengyuyue from '@/views/yishengyuyue/list'
 	import zhenduanbingli from '@/views/zhenduanbingli/list'
 	import jiuzhentongzhi from '@/views/jiuzhentongzhi/list'
+	import tongzhijilu from '@/views/tongzhijilu/list'
 	import yaopinxinxi from '@/views/yaopinxinxi/list'
 	import syslog from '@/views/syslog/list'
 	import rukujilu from '@/views/rukujilu/list'
@@ -78,6 +79,11 @@ export const routes = [{
 			path: '/jiuzhentongzhi',
 			name: '就诊通知',
 			component: jiuzhentongzhi
+		}
+		,{
+			path: '/tongzhijilu',
+			name: '通知发送记录',
+			component: tongzhijilu
 		}
 		,{
 			path: '/yaopinxinxi',
