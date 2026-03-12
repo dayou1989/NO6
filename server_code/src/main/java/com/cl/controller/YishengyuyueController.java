@@ -26,8 +26,10 @@ import com.cl.annotation.SysLog;
 
 import com.cl.entity.YishengyuyueEntity;
 import com.cl.entity.view.YishengyuyueView;
+import com.cl.entity.JiuzhentongzhiEntity;
 
 import com.cl.service.YishengyuyueService;
+import com.cl.service.JiuzhentongzhiService;
 import com.cl.service.TokenService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
@@ -47,6 +49,8 @@ import com.cl.utils.CommonUtil;
 public class YishengyuyueController {
     @Autowired
     private YishengyuyueService yishengyuyueService;
+    @Autowired
+    private JiuzhentongzhiService jiuzhentongzhiService;
 
 
 
@@ -190,9 +194,78 @@ public class YishengyuyueController {
             yishengyuyue.setSfsh(sfsh);
             yishengyuyue.setShhf(shhf);
             list.add(yishengyuyue);
+            
+            // 如果审核通过，立即创建就诊通知
+            if("是".equals(sfsh)) {
+                createJiuzhenNotifications(yishengyuyue);
+            }
         }
         yishengyuyueService.updateBatchById(list);
         return R.ok();
+    }
+    
+    /**
+     * 创建就诊通知
+     */
+    private void createJiuzhenNotifications(YishengyuyueEntity yishengyuyue) {
+        // 生成通知编号
+        String notificationNo = "TZ" + System.currentTimeMillis();
+        
+        // 创建预约成功提醒
+        JiuzhentongzhiEntity successNotice = new JiuzhentongzhiEntity();
+        successNotice.setTongzhibianhao(notificationNo + "-01");
+        successNotice.setYishengzhanghao(yishengyuyue.getYishengzhanghao());
+        successNotice.setDianhua(yishengyuyue.getDianhua());
+        successNotice.setJiuzhenshijian(yishengyuyue.getYuyueshijian());
+        successNotice.setTongzhishijian(new Date());
+        successNotice.setZhanghao(yishengyuyue.getZhanghao());
+        successNotice.setShouji(yishengyuyue.getShouji());
+        successNotice.setTongzhibeizhu("预约成功提醒：您已成功预约医生，请按时就诊。预约备注：" + yishengyuyue.getYuyuebeizhu());
+        successNotice.setStatus("待发送");
+        successNotice.setRetryCount(0);
+        successNotice.setMaxRetryCount(3);
+        successNotice.setNoticeType("预约成功提醒");
+        successNotice.setAddtime(new Date());
+        jiuzhentongzhiService.insert(successNotice);
+        
+        // 创建就诊前1天提醒
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(yishengyuyue.getYuyueshijian());
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        JiuzhentongzhiEntity oneDayNotice = new JiuzhentongzhiEntity();
+        oneDayNotice.setTongzhibianhao(notificationNo + "-02");
+        oneDayNotice.setYishengzhanghao(yishengyuyue.getYishengzhanghao());
+        oneDayNotice.setDianhua(yishengyuyue.getDianhua());
+        oneDayNotice.setJiuzhenshijian(yishengyuyue.getYuyueshijian());
+        oneDayNotice.setTongzhishijian(new Date());
+        oneDayNotice.setZhanghao(yishengyuyue.getZhanghao());
+        oneDayNotice.setShouji(yishengyuyue.getShouji());
+        oneDayNotice.setTongzhibeizhu("就诊前1天提醒：明天您有就诊预约，请提前做好准备。");
+        oneDayNotice.setStatus("待发送");
+        oneDayNotice.setRetryCount(0);
+        oneDayNotice.setMaxRetryCount(3);
+        oneDayNotice.setNoticeType("就诊前1天提醒");
+        oneDayNotice.setAddtime(new Date());
+        jiuzhentongzhiService.insert(oneDayNotice);
+        
+        // 创建就诊前1小时提醒
+        calendar.setTime(yishengyuyue.getYuyueshijian());
+        calendar.add(Calendar.HOUR, -1);
+        JiuzhentongzhiEntity oneHourNotice = new JiuzhentongzhiEntity();
+        oneHourNotice.setTongzhibianhao(notificationNo + "-03");
+        oneHourNotice.setYishengzhanghao(yishengyuyue.getYishengzhanghao());
+        oneHourNotice.setDianhua(yishengyuyue.getDianhua());
+        oneHourNotice.setJiuzhenshijian(yishengyuyue.getYuyueshijian());
+        oneHourNotice.setTongzhishijian(new Date());
+        oneHourNotice.setZhanghao(yishengyuyue.getZhanghao());
+        oneHourNotice.setShouji(yishengyuyue.getShouji());
+        oneHourNotice.setTongzhibeizhu("就诊前1小时提醒：距离您的就诊时间还有1小时，请按时到达。");
+        oneHourNotice.setStatus("待发送");
+        oneHourNotice.setRetryCount(0);
+        oneHourNotice.setMaxRetryCount(3);
+        oneHourNotice.setNoticeType("就诊前1小时提醒");
+        oneHourNotice.setAddtime(new Date());
+        jiuzhentongzhiService.insert(oneHourNotice);
     }
 
 

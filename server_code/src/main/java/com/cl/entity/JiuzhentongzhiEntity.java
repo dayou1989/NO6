@@ -103,6 +103,38 @@ public class JiuzhentongzhiEntity<T> implements Serializable {
 					
 	private String tongzhibeizhu;
 	
+	/**
+	 * 通知状态：待发送、发送中、发送成功、发送失败
+	 */
+	private String status;
+	
+	/**
+	 * 重试次数
+	 */
+	private Integer retryCount;
+	
+	/**
+	 * 最大重试次数
+	 */
+	private Integer maxRetryCount;
+	
+	/**
+	 * 下次重试时间
+	 */
+	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat 		
+	private Date nextRetryTime;
+	
+	/**
+	 * 发送失败原因
+	 */
+	private String failReason;
+	
+	/**
+	 * 通知类型：预约成功提醒、就诊前提醒等
+	 */
+	private String noticeType;
+	
 
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat
@@ -216,6 +248,78 @@ public class JiuzhentongzhiEntity<T> implements Serializable {
 	 */
 	public String getTongzhibeizhu() {
 		return tongzhibeizhu;
+	}
+	/**
+	 * 设置：通知状态
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	/**
+	 * 获取：通知状态
+	 */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * 设置：重试次数
+	 */
+	public void setRetryCount(Integer retryCount) {
+		this.retryCount = retryCount;
+	}
+	/**
+	 * 获取：重试次数
+	 */
+	public Integer getRetryCount() {
+		return retryCount;
+	}
+	/**
+	 * 设置：最大重试次数
+	 */
+	public void setMaxRetryCount(Integer maxRetryCount) {
+		this.maxRetryCount = maxRetryCount;
+	}
+	/**
+	 * 获取：最大重试次数
+	 */
+	public Integer getMaxRetryCount() {
+		return maxRetryCount;
+	}
+	/**
+	 * 设置：下次重试时间
+	 */
+	public void setNextRetryTime(Date nextRetryTime) {
+		this.nextRetryTime = nextRetryTime;
+	}
+	/**
+	 * 获取：下次重试时间
+	 */
+	public Date getNextRetryTime() {
+		return nextRetryTime;
+	}
+	/**
+	 * 设置：发送失败原因
+	 */
+	public void setFailReason(String failReason) {
+		this.failReason = failReason;
+	}
+	/**
+	 * 获取：发送失败原因
+	 */
+	public String getFailReason() {
+		return failReason;
+	}
+	/**
+	 * 设置：通知类型
+	 */
+	public void setNoticeType(String noticeType) {
+		this.noticeType = noticeType;
+	}
+	/**
+	 * 获取：通知类型
+	 */
+	public String getNoticeType() {
+		return noticeType;
 	}
 
 }

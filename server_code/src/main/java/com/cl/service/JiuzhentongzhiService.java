@@ -27,6 +27,15 @@ public interface JiuzhentongzhiService extends IService<JiuzhentongzhiEntity> {
    	
    	PageUtils queryPage(Map<String, Object> params,Wrapper<JiuzhentongzhiEntity> wrapper);
    	
+   	boolean sendNotification(Long id);
+   	
+   	boolean retryNotification(Long id);
+   	
+   	void processPendingNotifications();
+   	
+   	List<JiuzhentongzhiEntity> getFailedNotifications();
+   	
+   	List<JiuzhentongzhiEntity> getPendingNotifications();
    
 }
 

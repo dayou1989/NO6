@@ -191,14 +191,82 @@ public class JiuzhentongzhiController {
         return R.ok();
     }
     
+    /**
+     * 手动发送通知
+     */
+    @RequestMapping("/send/{id}")
+    @SysLog("手动发送就诊通知")
+    public R send(@PathVariable("id") Long id){
+        boolean result = jiuzhentongzhiService.sendNotification(id);
+        if(result) {
+            return R.ok("通知发送成功");
+        } else {
+            return R.error("通知发送失败，请查看详情");
+        }
+    }
+    
+    /**
+     * 手动重试发送通知
+     */
+    @RequestMapping("/retry/{id}")
+    @SysLog("手动重试发送就诊通知")
+    public R retry(@PathVariable("id") Long id){
+        boolean result = jiuzhentongzhiService.retryNotification(id);
+        if(result) {
+            return R.ok("通知重试发送成功");
+        } else {
+            return R.error("通知重试发送失败，请查看详情");
+        }
+    }
+    
+    /**
+     * 获取失败的通知列表
+     */
+    @RequestMapping("/failed")
+    public R getFailedNotifications(){
+        List<JiuzhentongzhiEntity> list = jiuzhentongzhiService.getFailedNotifications();
+        return R.ok().put("data", list);
+    }
+    
+    /**
+     * 获取待发送的通知列表
+     */
+    @RequestMapping("/pending")
+    public R getPendingNotifications(){
+        List<JiuzhentongzhiEntity> list = jiuzhentongzhiService.getPendingNotifications();
+        return R.ok().put("data", list);
+    }
+    
+    /**
+     * 统计通知状态
+     */
+    @RequestMapping("/stats")
+    public R getNotificationStats(){
+        Map<String, Object> stats = new HashMap<>();
+        
+        EntityWrapper<JiuzhentongzhiEntity> pendingWrapper = new EntityWrapper<>();
+        pendingWrapper.eq("status", "待发送");
+        int pendingCount = jiuzhentongzhiService.selectCount(pendingWrapper);
+        
+        EntityWrapper<JiuzhentongzhiEntity> sendingWrapper = new EntityWrapper<>();
+        sendingWrapper.eq("status", "发送中");
+        int sendingCount = jiuzhentongzhiService.selectCount(sendingWrapper);
+        
+        EntityWrapper<JiuzhentongzhiEntity> successWrapper = new EntityWrapper<>();
+        successWrapper.eq("status", "发送成功");
+        int successCount = jiuzhentongzhiService.selectCount(successWrapper);
+        
+        EntityWrapper<JiuzhentongzhiEntity> failedWrapper = new EntityWrapper<>();
+        failedWrapper.eq("status", "发送失败");
+        int failedCount = jiuzhentongzhiService.selectCount(failedWrapper);
+        
+        stats.put("pending", pendingCount);
+        stats.put("sending", sendingCount);
+        stats.put("success", successCount);
+        stats.put("failed", failedCount);
+        
+        return R.ok().put("data", stats);
+    }
+    
 	
-
-
-
-
-
-
-
-
-
 }
