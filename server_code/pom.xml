@@ -143,6 +143,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- H2内存数据库，用于测试 -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -163,7 +169,7 @@
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-surefire-plugin</artifactId>
                <configuration>
-                   <skipTests>true</skipTests>
+                   <skipTests>false</skipTests>
                </configuration>
            </plugin>
 		</plugins>

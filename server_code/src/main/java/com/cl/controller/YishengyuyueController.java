@@ -28,6 +28,7 @@ import com.cl.entity.YishengyuyueEntity;
 import com.cl.entity.view.YishengyuyueView;
 
 import com.cl.service.YishengyuyueService;
+import com.cl.service.NotificationService;
 import com.cl.service.TokenService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
@@ -47,6 +48,9 @@ import com.cl.utils.CommonUtil;
 public class YishengyuyueController {
     @Autowired
     private YishengyuyueService yishengyuyueService;
+    
+    @Autowired
+    private NotificationService notificationService;
 
 
 
@@ -190,6 +194,11 @@ public class YishengyuyueController {
             yishengyuyue.setSfsh(sfsh);
             yishengyuyue.setShhf(shhf);
             list.add(yishengyuyue);
+            
+            // 如果审核通过（"是"），立即创建所有后续通知记录
+            if("是".equals(sfsh)) {
+                notificationService.createNotificationsAfterApproval(yishengyuyue);
+            }
         }
         yishengyuyueService.updateBatchById(list);
         return R.ok();
